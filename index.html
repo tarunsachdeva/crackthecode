@@ -210,6 +210,63 @@
             transform: scale(1.05);
         }
 
+        .level-selector {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .level-selector h3 {
+            color: #4a5568;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .level-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .level-button {
+            background: white;
+            border: 3px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 15px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 150px;
+            max-width: 200px;
+        }
+
+        .level-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .level-button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
+
+        .level-name {
+            display: block;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .level-desc {
+            display: block;
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+
         @media (max-width: 600px) {
             h1 {
                 font-size: 1.8em;
@@ -237,6 +294,25 @@
 <body>
     <div class="game-container">
         <h1>🔐 Crack The Code 🔐</h1>
+        
+        <div class="level-selector">
+            <h3>Choose Your Level:</h3>
+            <div class="level-buttons">
+                <button class="level-button active" data-level="1" onclick="selectLevel(1)">
+                    <span class="level-name">Level 1</span>
+                    <span class="level-desc">Basic math (0-10)</span>
+                </button>
+                <button class="level-button" data-level="2" onclick="selectLevel(2)">
+                    <span class="level-name">Level 2</span>
+                    <span class="level-desc">Bigger numbers (0-15)</span>
+                </button>
+                <button class="level-button" data-level="3" onclick="selectLevel(3)">
+                    <span class="level-name">Level 3</span>
+                    <span class="level-desc">+, −, × (up to 5×5)</span>
+                </button>
+            </div>
+        </div>
+        
         <p class="instructions">Solve the math problems, then use the legend to find the secret letters!</p>
         
         <div class="puzzles-container" id="puzzlesContainer">
@@ -258,114 +334,132 @@
     </div>
 
     <script>
-        // 100 simple sentences for grade 2-3 students
-        const sentences = [
-            "I LOVE MY DOG",
-            "THE SUN IS HOT",
-            "CATS ARE SOFT",
-            "WE GO TO SCHOOL",
-            "I CAN RUN FAST",
-            "BIRDS CAN FLY",
-            "THE SKY IS BLUE",
-            "I LIKE TO READ",
-            "MY MOM IS NICE",
-            "DOGS WAG TAILS",
-            "FISH SWIM IN WATER",
-            "I HAVE TWO EYES",
-            "TREES ARE TALL",
-            "I PLAY WITH TOYS",
-            "THE MOON IS WHITE",
-            "I EAT GOOD FOOD",
-            "RAIN MAKES ME WET",
-            "I BRUSH MY TEETH",
-            "BEES MAKE HONEY",
-            "WE NEED TO SLEEP",
-            "MY DAD IS STRONG",
-            "I CAN COUNT TO TEN",
-            "FLOWERS SMELL NICE",
-            "THE GRASS IS GREEN",
-            "I RIDE MY BIKE",
-            "STARS SHINE AT NIGHT",
-            "I HAVE TEN FINGERS",
-            "SNOW IS COLD",
-            "I HELP MY FRIENDS",
-            "BOOKS ARE FUN",
-            "THE OCEAN IS BIG",
-            "I WASH MY HANDS",
-            "FROGS JUMP HIGH",
-            "WE EAT LUNCH AT NOON",
-            "MY ROOM IS CLEAN",
-            "I LIKE TO SING",
-            "CLOUDS ARE WHITE",
-            "THE WIND BLOWS",
-            "I DRAW WITH CRAYONS",
-            "PIZZA TASTES GOOD",
-            "MY SHOES ARE RED",
-            "I SHARE MY TOYS",
-            "THE BELL RINGS LOUD",
-            "BEARS ARE BIG",
-            "I KNOW MY NAME",
-            "THE PARK IS FUN",
-            "I FEED MY PET",
-            "APPLES ARE SWEET",
-            "WE PLAY OUTSIDE",
-            "MY SISTER IS KIND",
-            "I MAKE MY BED",
-            "THE CLOCK TELLS TIME",
-            "I WEAR A HAT",
-            "COOKIES ARE YUMMY",
-            "THE DOOR IS OPEN",
-            "I SIT ON A CHAIR",
-            "MILK IS WHITE",
-            "I WALK TO CLASS",
-            "THE BALL IS ROUND",
-            "I TIE MY SHOES",
-            "ICE CREAM IS COLD",
-            "WE SING SONGS",
-            "MY BROTHER IS TALL",
-            "I COLOR PICTURES",
-            "THE CAR IS FAST",
-            "I DRINK WATER",
-            "RABBITS HOP AROUND",
-            "WE LEARN NEW THINGS",
-            "MY HAIR IS BROWN",
-            "I WRITE MY LETTERS",
-            "THE HOUSE IS WARM",
-            "I PACK MY BAG",
-            "DUCKS SWIM IN PONDS",
-            "WE SAY PLEASE",
-            "MY DESK IS NEAT",
-            "I CATCH THE BALL",
-            "THE TRAIN GOES FAST",
-            "I WEAR SOCKS",
-            "CANDY IS SWEET",
-            "WE WAIT IN LINE",
-            "MY COAT IS WARM",
-            "I JUMP ROPE",
-            "THE BUS IS YELLOW",
-            "I PLANT SEEDS",
-            "OWLS HOOT AT NIGHT",
-            "WE WORK TOGETHER",
-            "MY PENCIL IS SHARP",
-            "I DANCE TO MUSIC",
-            "THE LAKE IS CALM",
-            "I BUILD WITH BLOCKS",
-            "HORSES RUN FAST",
-            "WE RAISE OUR HANDS",
-            "MY LUNCH IS READY",
-            "I SWING HIGH",
-            "THE FIRE IS HOT",
-            "I FIND MY BOOK",
-            "SHEEP ARE FLUFFY",
-            "WE CLEAN OUR ROOM",
-            "MY GLOVES ARE BLUE",
-            "I CLIMB THE TREE",
-            "THE BABY IS CUTE"
-        ];
+        // Level configurations
+        const levelSettings = {
+            1: {
+                name: "Level 1",
+                maxWords: 4,
+                maxNumber: 10,
+                operations: ['+', '-'],
+                allowMultiplication: false,
+                description: "Basic addition and subtraction (0-10)"
+            },
+            2: {
+                name: "Level 2", 
+                maxWords: 5,
+                maxNumber: 15,
+                operations: ['+', '-'],
+                allowMultiplication: false,
+                description: "Larger numbers (0-15)"
+            },
+            3: {
+                name: "Level 3",
+                maxWords: 10,
+                maxNumber: 25,  // Increased to handle multiplication results
+                operations: ['+', '-', '×'],
+                allowMultiplication: true,
+                multiplicationMaxFactor: 5,  // Max factor for multiplication (5x5=25)
+                description: "Advanced with multiplication (up to 5×5)"
+            }
+        };
+
+        // Sentences organized by difficulty level
+        const sentencesByLevel = {
+            1: [
+                // 2-4 word sentences (50 sentences)
+                "I LOVE DOGS", "THE SUN SHINES", "CATS ARE SOFT", "WE GO HOME",
+                "I CAN RUN", "BIRDS CAN FLY", "THE SKY BLUE", "I LIKE BOOKS",
+                "MOM IS NICE", "DOGS WAG TAILS", "FISH CAN SWIM", "I HAVE EYES",
+                "TREES ARE TALL", "I PLAY GAMES", "THE MOON GLOWS", "I EAT FOOD",
+                "RAIN IS WET", "I BRUSH TEETH", "BEES MAKE HONEY", "WE NEED SLEEP",
+                "DAD IS STRONG", "I CAN COUNT", "FLOWERS SMELL NICE", "GRASS IS GREEN",
+                "I RIDE BIKES", "STARS SHINE BRIGHT", "I HAVE HANDS", "SNOW IS COLD",
+                "I HELP FRIENDS", "BOOKS ARE FUN", "OCEAN IS BIG", "I WASH HANDS",
+                "FROGS JUMP HIGH", "WE EAT LUNCH", "MY ROOM CLEAN", "I LIKE SONGS",
+                "CLOUDS ARE WHITE", "WIND CAN BLOW", "I DRAW PICTURES", "PIZZA TASTES GOOD",
+                "SHOES ARE RED", "I SHARE TOYS", "BELLS RING LOUD", "BEARS ARE BIG",
+                "I KNOW MATH", "PARKS ARE FUN", "I FEED PETS", "APPLES ARE SWEET",
+                "WE PLAY OUTSIDE", "MY SISTER KIND"
+            ],
+            2: [
+                // 3-5 word sentences (50 sentences)
+                "I LOVE MY BIG DOG", "THE BRIGHT SUN IS HOT", "CATS ARE VERY SOFT PETS",
+                "WE GO TO SCHOOL DAILY", "I CAN RUN VERY FAST", "BIRDS FLY IN THE SKY",
+                "THE SKY IS BRIGHT BLUE", "I LIKE TO READ BOOKS", "MY MOM IS VERY NICE",
+                "DOGS WAG THEIR LONG TAILS", "FISH SWIM IN COLD WATER", "I HAVE TWO BROWN EYES",
+                "TALL TREES GROW IN PARKS", "I PLAY WITH MY TOYS", "THE MOON IS VERY WHITE",
+                "I EAT GOOD HEALTHY FOOD", "RAIN MAKES US ALL WET", "I BRUSH MY WHITE TEETH",
+                "BUSY BEES MAKE SWEET HONEY", "WE NEED TO SLEEP WELL", "MY DAD IS SUPER STRONG",
+                "I CAN COUNT TO TWENTY", "PRETTY FLOWERS SMELL SO NICE", "THE GRASS IS VERY GREEN",
+                "I RIDE MY NEW BIKE", "STARS SHINE BRIGHT AT NIGHT", "I HAVE TEN SMALL FINGERS",
+                "COLD SNOW FALLS IN WINTER", "I HELP MY BEST FRIENDS", "BOOKS ARE REALLY FUN THINGS",
+                "THE OCEAN IS VERY BIG", "I WASH MY DIRTY HANDS", "GREEN FROGS JUMP VERY HIGH",
+                "WE EAT LUNCH AT NOON", "MY ROOM IS SUPER CLEAN", "I LIKE TO SING SONGS",
+                "WHITE CLOUDS FLOAT IN SKY", "THE WIND BLOWS VERY HARD", "I DRAW WITH MANY CRAYONS",
+                "CHEESE PIZZA TASTES REALLY GOOD", "MY NEW SHOES ARE RED", "I SHARE ALL MY TOYS",
+                "THE SCHOOL BELL RINGS LOUD", "BIG BEARS LIVE IN FORESTS", "I KNOW MY FULL NAME",
+                "THE PARK IS VERY FUN", "I FEED MY HUNGRY PET", "RED APPLES ARE VERY SWEET",
+                "WE PLAY OUTSIDE EVERY DAY", "MY LITTLE SISTER IS KIND"
+            ],
+            3: [
+                // 5-10 word sentences (50 sentences)
+                "I LOVE TO PLAY WITH MY BIG BROWN DOG EVERY MORNING",
+                "THE BRIGHT YELLOW SUN MAKES THE WHOLE WORLD FEEL WARM TODAY",
+                "MY FLUFFY WHITE CAT LIKES TO SLEEP ON THE SOFT COUCH",
+                "WE GO TO SCHOOL EVERY DAY TO LEARN NEW EXCITING THINGS",
+                "I CAN RUN VERY FAST WHEN I PLAY TAG WITH FRIENDS",
+                "BEAUTIFUL BIRDS FLY HIGH IN THE BRIGHT BLUE SKY EVERY DAY",
+                "THE OCEAN WAVES CRASH ON THE SANDY BEACH ALL DAY LONG",
+                "I LIKE TO READ ADVENTURE BOOKS BEFORE I GO TO BED",
+                "MY WONDERFUL MOM MAKES THE BEST CHOCOLATE CHIP COOKIES IN TOWN",
+                "HAPPY DOGS WAG THEIR TAILS WHEN THEY SEE THEIR LOVING OWNERS",
+                "COLORFUL FISH SWIM TOGETHER IN THE DEEP BLUE OCEAN WATER DAILY",
+                "I HAVE TWO EYES THAT HELP ME SEE THE BEAUTIFUL WORLD",
+                "TALL GREEN TREES GROW IN THE FOREST AND GIVE US OXYGEN",
+                "I PLAY WITH MY TOYS IN MY ROOM AFTER SCHOOL ENDS",
+                "THE BRIGHT WHITE MOON LIGHTS UP THE DARK NIGHT SKY BEAUTIFULLY",
+                "I EAT HEALTHY FOOD TO HELP MY BODY GROW BIG AND STRONG",
+                "RAIN MAKES THE FLOWERS GROW AND THE GRASS TURN BRIGHT GREEN",
+                "I BRUSH MY TEETH TWICE EVERY DAY TO KEEP THEM CLEAN",
+                "BUSY BEES MAKE DELICIOUS HONEY BY VISITING MANY COLORFUL FLOWERS DAILY",
+                "WE NEED TO SLEEP EIGHT HOURS TO FEEL GOOD THE NEXT DAY",
+                "MY STRONG DAD CAN LIFT HEAVY THINGS AND FIX BROKEN STUFF EASILY",
+                "I CAN COUNT TO ONE HUNDRED AND SOLVE MATH PROBLEMS VERY WELL",
+                "BEAUTIFUL FLOWERS SMELL NICE AND MAKE OUR GARDEN LOOK VERY PRETTY",
+                "THE SOFT GREEN GRASS FEELS GOOD UNDER MY BARE FEET IN SUMMER",
+                "I RIDE MY SHINY RED BIKE TO THE PARK EVERY SATURDAY MORNING",
+                "BRIGHT STARS SHINE IN THE NIGHT SKY LIKE TINY DIAMONDS ABOVE US",
+                "I HAVE TEN FINGERS THAT HELP ME WRITE AND DRAW PICTURES WELL",
+                "COLD WHITE SNOW FALLS FROM THE SKY AND COVERS EVERYTHING IN WINTER",
+                "I ALWAYS HELP MY FRIENDS WHEN THEY NEED SOMEONE TO TALK TO",
+                "READING BOOKS IS FUN AND HELPS US LEARN ABOUT THE WHOLE WORLD",
+                "THE PACIFIC OCEAN IS THE BIGGEST BODY OF WATER ON PLANET EARTH",
+                "I WASH MY HANDS WITH SOAP BEFORE EATING TO STAY HEALTHY ALWAYS",
+                "GREEN FROGS JUMP HIGH AND CATCH FLIES WITH THEIR LONG STICKY TONGUES",
+                "WE EAT LUNCH IN THE CAFETERIA WITH ALL OUR FRIENDS AT NOON",
+                "MY BEDROOM IS CLEAN BECAUSE I PUT AWAY ALL MY TOYS DAILY",
+                "I LIKE TO SING HAPPY SONGS WHEN I TAKE A WARM BATH",
+                "WHITE FLUFFY CLOUDS FLOAT SLOWLY ACROSS THE BRIGHT BLUE SKY ALL DAY",
+                "THE STRONG WIND BLOWS THE AUTUMN LEAVES OFF ALL THE TALL TREES",
+                "I DRAW COLORFUL PICTURES WITH MY NEW BOX OF CRAYONS AFTER SCHOOL",
+                "DELICIOUS CHEESE PIZZA WITH PEPPERONI IS MY FAVORITE FOOD TO EAT",
+                "MY NEW RED SHOES HELP ME RUN FASTER THAN EVER BEFORE NOW",
+                "I SHARE MY TOYS WITH MY LITTLE BROTHER BECAUSE I LOVE HIM",
+                "THE LOUD SCHOOL BELL RINGS TO TELL US WHEN CLASS IS OVER",
+                "BIG BROWN BEARS LIVE IN THE FOREST AND EAT FISH FROM RIVERS",
+                "I KNOW MY FULL NAME AND ADDRESS IN CASE I GET LOST",
+                "THE PLAYGROUND AT THE PARK IS FUN WITH SWINGS AND SLIDES",
+                "I FEED MY HUNGRY PET RABBIT FRESH CARROTS AND LETTUCE EVERY DAY",
+                "SWEET RED APPLES GROW ON TREES IN THE ORCHARD NEAR MY HOUSE",
+                "WE PLAY OUTSIDE IN THE SUNSHINE WHEN THE WEATHER IS NICE",
+                "MY LITTLE SISTER IS KIND AND SHARES HER TOYS WITH ME"
+            ]
+        };
 
         // All possible letters we might use
         const allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
         
+        let currentLevel = 1;
         let currentLegend = {};
         let currentSentence = "";
         let totalProblems = 0;
@@ -375,6 +469,7 @@
         function generateShuffledLegend() {
             const legend = {};
             const usedLetters = new Set();
+            const maxNum = levelSettings[currentLevel].maxNumber;
             
             // Get unique letters from the current sentence
             currentSentence.split('').forEach(char => {
@@ -387,16 +482,16 @@
             const lettersArray = Array.from(usedLetters);
             const shuffledLetters = [...lettersArray].sort(() => Math.random() - 0.5);
             
-            // Assign numbers 0-10 to letters (we'll use only what we need)
+            // Assign numbers 0-maxNum to letters
             shuffledLetters.forEach((letter, index) => {
-                if (index <= 10) {
+                if (index <= maxNum) {
                     legend[index] = letter;
                 }
-            });
+            });l
             
-            // Fill remaining spots (if sentence has fewer than 11 unique letters)
+            // Fill remaining spots (if sentence has fewer unique letters than maxNum+1)
             let nextIndex = shuffledLetters.length;
-            for (let i = 0; i < allLetters.length && nextIndex <= 10; i++) {
+            for (let i = 0; i < allLetters.length && nextIndex <= maxNum; i++) {
                 if (!usedLetters.has(allLetters[i])) {
                     legend[nextIndex] = allLetters[i];
                     nextIndex++;
@@ -408,17 +503,61 @@
 
         // Function to generate math problems
         function generateMathProblem(targetNumber) {
-            const operations = ['+', '-'];
-            const operation = operations[Math.floor(Math.random() * operations.length)];
+            const settings = levelSettings[currentLevel];
+            const operations = settings.operations;
+            const maxNum = settings.maxNumber;
+            
+            // For multiplication in level 3, occasionally use multiplication
+            if (settings.allowMultiplication && Math.random() < 0.35) {
+                // Try to find multiplication factors up to 5
+                const factors = [];
+                const maxFactor = settings.multiplicationMaxFactor;
+                
+                for (let i = 2; i <= maxFactor; i++) {
+                    if (targetNumber % i === 0) {
+                        const otherFactor = targetNumber / i;
+                        if (otherFactor <= maxFactor && otherFactor >= 2) {
+                            factors.push([i, otherFactor]);
+                        }
+                    }
+                }
+                
+                // Also allow simple multiplications that equal the target
+                if (targetNumber <= maxFactor * maxFactor) {
+                    for (let i = 1; i <= maxFactor; i++) {
+                        for (let j = i; j <= maxFactor; j++) {
+                            if (i * j === targetNumber) {
+                                factors.push([i, j]);
+                            }
+                        }
+                    }
+                }
+                
+                if (factors.length > 0) {
+                    const [a, b] = factors[Math.floor(Math.random() * factors.length)];
+                    return `${a} × ${b}`;
+                }
+            }
+            
+            // Use addition or subtraction
+            const operation = operations.filter(op => op !== '×')[Math.floor(Math.random() * 2)];
             
             let a, b;
             if (operation === '+') {
-                // For addition, ensure result doesn't exceed 10
-                a = Math.floor(Math.random() * (targetNumber + 1));
-                b = targetNumber - a;
+                // For addition, ensure result doesn't exceed 20 for level 3
+                const addMax = Math.min(20, maxNum);
+                if (targetNumber <= addMax) {
+                    a = Math.floor(Math.random() * (targetNumber + 1));
+                    b = targetNumber - a;
+                } else {
+                    // For numbers > 20, use larger addition
+                    a = 10 + Math.floor(Math.random() * 11);
+                    b = targetNumber - a;
+                }
             } else {
                 // For subtraction, ensure we don't get negative numbers
-                a = targetNumber + Math.floor(Math.random() * (11 - targetNumber));
+                const subMax = Math.min(20, maxNum);
+                a = targetNumber + Math.floor(Math.random() * (subMax - targetNumber + 1));
                 b = a - targetNumber;
             }
             
@@ -429,8 +568,9 @@
             totalProblems = 0;
             correctAnswers = 0;
             
-            // Select a random sentence
-            currentSentence = sentences[Math.floor(Math.random() * sentences.length)];
+            // Select a random sentence from the current level
+            const levelSentences = sentencesByLevel[currentLevel];
+            currentSentence = levelSentences[Math.floor(Math.random() * levelSentences.length)];
             
             // Generate shuffled legend
             currentLegend = generateShuffledLegend();
@@ -514,8 +654,7 @@
             
             // Sort legend by number for display
             const sortedLegend = Object.entries(currentLegend)
-                .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
-                .slice(0, 11); // Only show 0-10
+                .sort((a, b) => parseInt(a[0]) - parseInt(b[0]));
             
             sortedLegend.forEach(([num, letter]) => {
                 const legendItem = document.createElement('div');
@@ -523,6 +662,19 @@
                 legendItem.textContent = `${num} → ${letter}`;
                 legendGrid.appendChild(legendItem);
             });
+        }
+
+        function selectLevel(level) {
+            currentLevel = level;
+            
+            // Update button states
+            document.querySelectorAll('.level-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-level="${level}"]`).classList.add('active');
+            
+            // Start new game with selected level
+            initGame();
         }
 
         function handleInput(event) {
