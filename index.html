@@ -267,6 +267,170 @@
             opacity: 0.8;
         }
 
+        .print-button {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 20px auto;
+            display: block;
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .print-button:hover {
+            transform: scale(1.05);
+        }
+
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            body {
+                background: white !important;
+                margin: 0 !important;
+                padding: 10px !important;
+            }
+
+            .game-container {
+                box-shadow: none !important;
+                border-radius: 0 !important;
+                padding: 10px !important;
+                max-width: 100% !important;
+            }
+
+            h1 {
+                font-size: 1.8em !important;
+                color: black !important;
+                text-shadow: none !important;
+                margin-bottom: 10px !important;
+            }
+
+            .level-selector, .reset-button, .print-button, .success-message {
+                display: none !important;
+            }
+
+            .print-info {
+                display: block !important;
+                text-align: center;
+                margin-bottom: 15px;
+                font-size: 0.9em;
+                color: #666;
+            }
+
+            .instructions {
+                font-size: 0.9em !important;
+                margin-bottom: 15px !important;
+                color: black !important;
+            }
+
+            .puzzles-container {
+                gap: 15px !important;
+                margin-bottom: 20px !important;
+            }
+
+            .puzzle-word {
+                background: white !important;
+                border: 2px solid #333 !important;
+                padding: 10px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+
+            .puzzle-word:hover {
+                transform: none !important;
+                box-shadow: none !important;
+            }
+
+            .word-title {
+                font-size: 1em !important;
+                color: black !important;
+                margin-bottom: 8px !important;
+            }
+
+            .puzzle-grid {
+                gap: 5px !important;
+            }
+
+            .puzzle-item {
+                gap: 3px !important;
+            }
+
+            .math-problem {
+                border: 1px solid #333 !important;
+                background: white !important;
+                padding: 5px !important;
+                font-size: 0.9em !important;
+                color: black !important;
+                min-height: 25px !important;
+            }
+
+            .answer-input, .letter-input {
+                width: 35px !important;
+                height: 35px !important;
+                border: 2px solid #333 !important;
+                background: white !important;
+                font-size: 1em !important;
+                color: black !important;
+            }
+
+            .answer-input.correct, .letter-input.correct {
+                background: white !important;
+                border-color: #333 !important;
+                color: black !important;
+            }
+
+            .answer-input.incorrect, .letter-input.incorrect {
+                background: white !important;
+                border-color: #333 !important;
+                color: black !important;
+            }
+
+            .legend-container {
+                background: white !important;
+                border: 2px solid #333 !important;
+                padding: 10px !important;
+                margin-top: 15px !important;
+                page-break-inside: avoid !important;
+            }
+
+            .legend-title {
+                font-size: 1.1em !important;
+                color: black !important;
+                text-shadow: none !important;
+                margin-bottom: 10px !important;
+            }
+
+            .legend-grid {
+                gap: 5px !important;
+            }
+
+            .legend-item {
+                background: white !important;
+                border: 1px solid #333 !important;
+                padding: 5px !important;
+                font-size: 0.9em !important;
+                color: black !important;
+                box-shadow: none !important;
+            }
+
+            .legend-item:hover {
+                transform: none !important;
+            }
+
+            /* Ensure everything fits on one page */
+            @page {
+                size: letter;
+                margin: 0.5in;
+            }
+        }
+
         @media (max-width: 600px) {
             h1 {
                 font-size: 1.8em;
@@ -294,6 +458,7 @@
 <body>
     <div class="game-container">
         <h1>🔐 Crack The Code 🔐</h1>
+        <div class="print-info" id="printInfo" style="display: none;"></div>
         
         <div class="level-selector">
             <h3>Choose Your Level:</h3>
@@ -327,6 +492,7 @@
         </div>
         
         <button class="reset-button" onclick="resetGame()">🎮 New Game</button>
+        <button class="print-button" onclick="printWorksheet()">🖨️ Print Worksheet</button>
     </div>
     
     <div class="success-message" id="successMessage">
@@ -487,7 +653,7 @@
                 if (index <= maxNum) {
                     legend[index] = letter;
                 }
-            });l
+            });
             
             // Fill remaining spots (if sentence has fewer unique letters than maxNum+1)
             let nextIndex = shuffledLetters.length;
@@ -722,6 +888,30 @@
 
         function resetGame() {
             initGame();
+        }
+
+        function printWorksheet() {
+            // Clear any user inputs before printing for a clean worksheet
+            const inputs = document.querySelectorAll('.answer-input, .letter-input');
+            inputs.forEach(input => {
+                input.classList.remove('correct', 'incorrect');
+                input.value = '';
+            });
+            
+            // Add print information
+            const printInfo = document.getElementById('printInfo');
+            const today = new Date().toLocaleDateString('en-US', { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+            });
+            const levelName = levelSettings[currentLevel].name;
+            printInfo.innerHTML = `${levelName} - ${today} - Name: ___________________`;
+            
+            // Add a small delay to ensure DOM updates, then print
+            setTimeout(() => {
+                window.print();
+            }, 100);
         }
 
         // Initialize the game when the page loads
