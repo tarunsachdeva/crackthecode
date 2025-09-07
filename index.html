@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crack The Code - Math Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #5a67d8;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .instructions {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+
+        .puzzles-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .puzzle-word {
+            background: #f7fafc;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #e2e8f0;
+            transition: transform 0.3s ease;
+            width: 100%;
+            overflow-x: auto;
+        }
+
+        .puzzle-word:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .word-title {
+            font-size: 1.2em;
+            color: #4a5568;
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .puzzle-grid {
+            display: inline-grid;
+            gap: 10px;
+            min-width: min-content;
+        }
+
+        .puzzle-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .math-problem {
+            background: white;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            font-size: 1em;
+            color: #2d3748;
+            font-weight: bold;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .answer-input, .letter-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 1.2em;
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .answer-input:focus, .letter-input:focus {
+            outline: none;
+            border-color: #667eea;
+            transform: scale(1.1);
+        }
+
+        .answer-input.correct, .letter-input.correct {
+            background: #c6f6d5;
+            border-color: #48bb78;
+            color: #22543d;
+        }
+
+        .answer-input.incorrect, .letter-input.incorrect {
+            background: #fed7d7;
+            border-color: #f56565;
+            color: #742a2a;
+        }
+
+        .legend-container {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+        }
+
+        .legend-title {
+            text-align: center;
+            color: white;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 10px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .legend-item {
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #2d3748;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease;
+        }
+
+        .legend-item:hover {
+            transform: scale(1.1);
+        }
+
+        .success-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 50px;
+            border-radius: 20px;
+            font-size: 2em;
+            font-weight: bold;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transition: transform 0.5s ease;
+        }
+
+        .success-message.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .reset-button {
+            display: block;
+            margin: 30px auto 0;
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            font-size: 1.2em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .reset-button:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .puzzle-word {
+                padding: 15px;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .answer-input, .letter-input {
+                width: 40px;
+                height: 40px;
+                font-size: 1em;
+            }
+            
+            .math-problem {
+                font-size: 0.9em;
+                min-height: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🔐 Crack The Code 🔐</h1>
+        <p class="instructions">Solve the math problems, then use the legend to find the secret letters!</p>
+        
+        <div class="puzzles-container" id="puzzlesContainer">
+            <!-- Puzzles will be generated here -->
+        </div>
+        
+        <div class="legend-container">
+            <h2 class="legend-title">🗝️ Number → Letter Legend 🗝️</h2>
+            <div class="legend-grid" id="legendGrid">
+                <!-- Legend will be generated here -->
+            </div>
+        </div>
+        
+        <button class="reset-button" onclick="resetGame()">🎮 New Game</button>
+    </div>
+    
+    <div class="success-message" id="successMessage">
+        🎉 Amazing Job! 🎉<br>You Cracked All The Codes!
+    </div>
+
+    <script>
+        // 100 simple sentences for grade 2-3 students
+        const sentences = [
+            "I LOVE MY DOG",
+            "THE SUN IS HOT",
+            "CATS ARE SOFT",
+            "WE GO TO SCHOOL",
+            "I CAN RUN FAST",
+            "BIRDS CAN FLY",
+            "THE SKY IS BLUE",
+            "I LIKE TO READ",
+            "MY MOM IS NICE",
+            "DOGS WAG TAILS",
+            "FISH SWIM IN WATER",
+            "I HAVE TWO EYES",
+            "TREES ARE TALL",
+            "I PLAY WITH TOYS",
+            "THE MOON IS WHITE",
+            "I EAT GOOD FOOD",
+            "RAIN MAKES ME WET",
+            "I BRUSH MY TEETH",
+            "BEES MAKE HONEY",
+            "WE NEED TO SLEEP",
+            "MY DAD IS STRONG",
+            "I CAN COUNT TO TEN",
+            "FLOWERS SMELL NICE",
+            "THE GRASS IS GREEN",
+            "I RIDE MY BIKE",
+            "STARS SHINE AT NIGHT",
+            "I HAVE TEN FINGERS",
+            "SNOW IS COLD",
+            "I HELP MY FRIENDS",
+            "BOOKS ARE FUN",
+            "THE OCEAN IS BIG",
+            "I WASH MY HANDS",
+            "FROGS JUMP HIGH",
+            "WE EAT LUNCH AT NOON",
+            "MY ROOM IS CLEAN",
+            "I LIKE TO SING",
+            "CLOUDS ARE WHITE",
+            "THE WIND BLOWS",
+            "I DRAW WITH CRAYONS",
+            "PIZZA TASTES GOOD",
+            "MY SHOES ARE RED",
+            "I SHARE MY TOYS",
+            "THE BELL RINGS LOUD",
+            "BEARS ARE BIG",
+            "I KNOW MY NAME",
+            "THE PARK IS FUN",
+            "I FEED MY PET",
+            "APPLES ARE SWEET",
+            "WE PLAY OUTSIDE",
+            "MY SISTER IS KIND",
+            "I MAKE MY BED",
+            "THE CLOCK TELLS TIME",
+            "I WEAR A HAT",
+            "COOKIES ARE YUMMY",
+            "THE DOOR IS OPEN",
+            "I SIT ON A CHAIR",
+            "MILK IS WHITE",
+            "I WALK TO CLASS",
+            "THE BALL IS ROUND",
+            "I TIE MY SHOES",
+            "ICE CREAM IS COLD",
+            "WE SING SONGS",
+            "MY BROTHER IS TALL",
+            "I COLOR PICTURES",
+            "THE CAR IS FAST",
+            "I DRINK WATER",
+            "RABBITS HOP AROUND",
+            "WE LEARN NEW THINGS",
+            "MY HAIR IS BROWN",
+            "I WRITE MY LETTERS",
+            "THE HOUSE IS WARM",
+            "I PACK MY BAG",
+            "DUCKS SWIM IN PONDS",
+            "WE SAY PLEASE",
+            "MY DESK IS NEAT",
+            "I CATCH THE BALL",
+            "THE TRAIN GOES FAST",
+            "I WEAR SOCKS",
+            "CANDY IS SWEET",
+            "WE WAIT IN LINE",
+            "MY COAT IS WARM",
+            "I JUMP ROPE",
+            "THE BUS IS YELLOW",
+            "I PLANT SEEDS",
+            "OWLS HOOT AT NIGHT",
+            "WE WORK TOGETHER",
+            "MY PENCIL IS SHARP",
+            "I DANCE TO MUSIC",
+            "THE LAKE IS CALM",
+            "I BUILD WITH BLOCKS",
+            "HORSES RUN FAST",
+            "WE RAISE OUR HANDS",
+            "MY LUNCH IS READY",
+            "I SWING HIGH",
+            "THE FIRE IS HOT",
+            "I FIND MY BOOK",
+            "SHEEP ARE FLUFFY",
+            "WE CLEAN OUR ROOM",
+            "MY GLOVES ARE BLUE",
+            "I CLIMB THE TREE",
+            "THE BABY IS CUTE"
+        ];
+
+        // All possible letters we might use
+        const allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+        
+        let currentLegend = {};
+        let currentSentence = "";
+        let totalProblems = 0;
+        let correctAnswers = 0;
+
+        // Function to generate a shuffled legend
+        function generateShuffledLegend() {
+            const legend = {};
+            const usedLetters = new Set();
+            
+            // Get unique letters from the current sentence
+            currentSentence.split('').forEach(char => {
+                if (char !== ' ' && !usedLetters.has(char)) {
+                    usedLetters.add(char);
+                }
+            });
+            
+            // Convert to array and shuffle
+            const lettersArray = Array.from(usedLetters);
+            const shuffledLetters = [...lettersArray].sort(() => Math.random() - 0.5);
+            
+            // Assign numbers 0-10 to letters (we'll use only what we need)
+            shuffledLetters.forEach((letter, index) => {
+                if (index <= 10) {
+                    legend[index] = letter;
+                }
+            });
+            
+            // Fill remaining spots (if sentence has fewer than 11 unique letters)
+            let nextIndex = shuffledLetters.length;
+            for (let i = 0; i < allLetters.length && nextIndex <= 10; i++) {
+                if (!usedLetters.has(allLetters[i])) {
+                    legend[nextIndex] = allLetters[i];
+                    nextIndex++;
+                }
+            }
+            
+            return legend;
+        }
+
+        // Function to generate math problems
+        function generateMathProblem(targetNumber) {
+            const operations = ['+', '-'];
+            const operation = operations[Math.floor(Math.random() * operations.length)];
+            
+            let a, b;
+            if (operation === '+') {
+                // For addition, ensure result doesn't exceed 10
+                a = Math.floor(Math.random() * (targetNumber + 1));
+                b = targetNumber - a;
+            } else {
+                // For subtraction, ensure we don't get negative numbers
+                a = targetNumber + Math.floor(Math.random() * (11 - targetNumber));
+                b = a - targetNumber;
+            }
+            
+            return `${a} ${operation} ${b}`;
+        }
+
+        function initGame() {
+            totalProblems = 0;
+            correctAnswers = 0;
+            
+            // Select a random sentence
+            currentSentence = sentences[Math.floor(Math.random() * sentences.length)];
+            
+            // Generate shuffled legend
+            currentLegend = generateShuffledLegend();
+            
+            // Split sentence into words
+            const words = currentSentence.split(' ');
+            
+            // Generate puzzles
+            const puzzlesContainer = document.getElementById('puzzlesContainer');
+            puzzlesContainer.innerHTML = '';
+            
+            words.forEach((word, wordIndex) => {
+                const wordDiv = document.createElement('div');
+                wordDiv.className = 'puzzle-word';
+                
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'word-title';
+                titleDiv.textContent = `Word ${wordIndex + 1}`;
+                wordDiv.appendChild(titleDiv);
+                
+                const gridDiv = document.createElement('div');
+                gridDiv.className = 'puzzle-grid';
+                gridDiv.style.gridTemplateColumns = `repeat(${word.length}, minmax(60px, 1fr))`;
+                
+                word.split('').forEach((letter, letterIndex) => {
+                    totalProblems += 2; // Count both answer and letter inputs
+                    
+                    // Find which number corresponds to this letter
+                    let targetNumber = null;
+                    for (let [num, leg] of Object.entries(currentLegend)) {
+                        if (leg === letter) {
+                            targetNumber = parseInt(num);
+                            break;
+                        }
+                    }
+                    
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'puzzle-item';
+                    
+                    const mathDiv = document.createElement('div');
+                    mathDiv.className = 'math-problem';
+                    mathDiv.textContent = generateMathProblem(targetNumber);
+                    
+                    const answerInput = document.createElement('input');
+                    answerInput.type = 'text';
+                    answerInput.className = 'answer-input';
+                    answerInput.placeholder = '';
+                    answerInput.maxLength = 2;
+                    answerInput.dataset.correct = targetNumber.toString();
+                    answerInput.dataset.wordIndex = wordIndex;
+                    answerInput.dataset.letterIndex = letterIndex;
+                    answerInput.dataset.type = 'answer';
+                    
+                    const letterInput = document.createElement('input');
+                    letterInput.type = 'text';
+                    letterInput.className = 'letter-input';
+                    letterInput.placeholder = '';
+                    letterInput.maxLength = 1;
+                    letterInput.dataset.correct = letter;
+                    letterInput.dataset.wordIndex = wordIndex;
+                    letterInput.dataset.letterIndex = letterIndex;
+                    letterInput.dataset.type = 'letter';
+                    
+                    // Add event listeners
+                    answerInput.addEventListener('input', handleInput);
+                    letterInput.addEventListener('input', handleInput);
+                    
+                    itemDiv.appendChild(mathDiv);
+                    itemDiv.appendChild(answerInput);
+                    itemDiv.appendChild(letterInput);
+                    gridDiv.appendChild(itemDiv);
+                });
+                
+                wordDiv.appendChild(gridDiv);
+                puzzlesContainer.appendChild(wordDiv);
+            });
+            
+            // Generate legend display
+            const legendGrid = document.getElementById('legendGrid');
+            legendGrid.innerHTML = '';
+            
+            // Sort legend by number for display
+            const sortedLegend = Object.entries(currentLegend)
+                .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+                .slice(0, 11); // Only show 0-10
+            
+            sortedLegend.forEach(([num, letter]) => {
+                const legendItem = document.createElement('div');
+                legendItem.className = 'legend-item';
+                legendItem.textContent = `${num} → ${letter}`;
+                legendGrid.appendChild(legendItem);
+            });
+        }
+
+        function handleInput(event) {
+            const input = event.target;
+            const value = input.value.toUpperCase();
+            const correct = input.dataset.correct.toUpperCase();
+            
+            if (value === '') {
+                input.classList.remove('correct', 'incorrect');
+                return;
+            }
+            
+            if (value === correct) {
+                if (!input.classList.contains('correct')) {
+                    input.classList.remove('incorrect');
+                    input.classList.add('correct');
+                    correctAnswers++;
+                    
+                    // Check if all problems are solved
+                    if (correctAnswers === totalProblems) {
+                        showSuccess();
+                    }
+                }
+            } else {
+                input.classList.remove('correct');
+                input.classList.add('incorrect');
+                
+                // If it was previously correct, decrease the count
+                if (input.dataset.wasCorrect === 'true') {
+                    correctAnswers--;
+                }
+            }
+            
+            input.dataset.wasCorrect = value === correct ? 'true' : 'false';
+        }
+
+        function showSuccess() {
+            const successMessage = document.getElementById('successMessage');
+            successMessage.classList.add('show');
+            
+            setTimeout(() => {
+                successMessage.classList.remove('show');
+            }, 3000);
+        }
+
+        function resetGame() {
+            initGame();
+        }
+
+        // Initialize the game when the page loads
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
